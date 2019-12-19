@@ -73,5 +73,57 @@ if (event.keyCode === KEY.SPACE) {
     }
 }
 
-
 });
+
+function animate(now = 0) {
+    // Update elapsed time.
+    time.elapsed = now - time.start;
+
+    // If elapsed time passed time for current level
+    if (time.elapsed > time.level) {
+    
+    // Restart counting from now
+    time.start = now;
+
+    this.drop();
+    }
+
+    // Clear board before drawing new state.
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    board.draw();
+    requestID = requestAnimationFrame(animate);    
+}
+
+let accountValues = {
+    score: 0,
+    lines: 0
+}
+
+function updateAccount(key, value) {
+    let element = document.getElementById(key);
+    if (element) {
+        element.textContent = value;
+    }
+}
+
+let account = new Proxy(accountValues, {
+    set: (target, key, value) => {
+        target[key] = value;
+        updateAccount(key, value);
+        return true;
+    }
+})
+
+if (event.keyCode === KEY.SPACE) {
+    while (board.valid(p)) {
+        account.score += POINTS.HARD_DROP;
+        board.piece.move(p);
+        p= moves[KEY.DOWN] (board.piece);
+    }
+} else if (board.valid(p)) {
+    board.piece.move(p);
+    if (event.keyCode === KEY.DOWN) {
+        account.score += POINTS.SOFT_DROP;
+    }
+}

@@ -10,3 +10,37 @@ const KEY = {
 }
 
 Object.freeze(KEY);
+
+const COLORS = [
+    'cyan',
+    'blue',
+    'orange',
+    'green',
+    'purple',
+    'red'
+];
+
+const SHAPES = [
+    [0, 0, 0, 0], 
+    [1, 1, 1, 1],
+    [0, 0, 0, 0], 
+    [0, 0, 0, 0]
+],
+[
+    [2, 0, 0],
+    [2, 2, 2],
+    [0, 0, 0]
+]
+
+// And so on
+];
+
+const POINTS = {
+        SINGLE: 100,
+        DOUBLE: 300,
+        TRIPLE: 500,
+        TETRIS: 800,
+        SOFT_DROP: 1,
+        HARD_DROP: 2
+}
+Object.freeze(POINTS);
