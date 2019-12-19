@@ -89,4 +89,19 @@ getLineClearPoints(lines) {
         lines === 3 ? Points.TRIPLE :
         lines === 4 ? Points.TETRIS :
         0;
+};
+
+clearLines() {
+    let lines = 0;
+    this.board.forEach(row, y) => {
+        if (row.every(value => value !== 0)) {
+            lines++; // Increase for cleared line
+            this.board.splice(y, 1);
+            this.board.unshift(Array(COLS).fill(0));
+        }
+    });
+    if (lines > 0) {
+        // Add points if we cleared some lines
+        account.score += this.getLineClearPoints(lines);
+    }
 }

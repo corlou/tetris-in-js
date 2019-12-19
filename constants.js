@@ -44,3 +44,14 @@ const POINTS = {
         HARD_DROP: 2
 }
 Object.freeze(POINTS);
+
+const LINES_PER_LEVEL = 10;
+
+const LEVEL = {
+    0: 800,
+    1: 720,
+    2: 630,
+    3: 550,
+    // ...
+}
+Object.freeze(LEVEL);
