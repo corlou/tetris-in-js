@@ -53,7 +53,6 @@ document.addEventListener('keydown', event => {
         
     }
 
-
 const KEY = {
     SPACE: 32,
     // ...
@@ -97,7 +96,8 @@ function animate(now = 0) {
 
 let accountValues = {
     score: 0,
-    lines: 0
+    lines: 0,
+    level: 0
 }
 
 function updateAccount(key, value) {
@@ -126,4 +126,13 @@ if (event.keyCode === KEY.SPACE) {
     if (event.keyCode === KEY.DOWN) {
         account.score += POINTS.SOFT_DROP;
     }
+}
+
+function gameOver() {
+    cancelAnimationFrame(requestID);
+    this.ctx.fillStyle = 'black';
+    this.ctx.fillRect(1, 2, 3, 8, 1.2);
+    this.ctx.font = '1px Arial';
+    this.ctx.fillStyle = 'red';
+    this.ctx.fillText('GAME OVER', 1.8, 4);
 }

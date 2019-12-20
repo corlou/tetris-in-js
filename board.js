@@ -1,107 +1,115 @@
 class Board {
+    ctx;
+    ctxNext;
     grid;
+    piece;
+    next;
+    requestId;
+    time;
 
-// Reset the board when we start a new game.
-reset() {
-    this.grid = this.EmptyBoard();
+    constructor(ctx, ctxNext) {
+        this.ctx = ctx;
+        this.ctxNext = ctxNext;
+        this.init();
     }
 
-// Get matrix filled with zeros.
-getEmptyBoard() {
-    return Array.from(
-        {length: ROWS}, () => Array(COLS).fill(0)
+    init() {
+        // Calculate size of canvas from constants.
+        this.ctx.canvas.width = COLS * BLOCK_SIZE;
+        this.ctx.canvas.height = ROWS * BLOCK_SIZE;
+
+        // Scale so we don't to give size on every draw.
+        this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
+    }
+
+    reset() {
+        this.grid = this.getEmptyGrid();
+        this.piece = new this.piece(this.ctx);
+        this.piece.setStartingPosition();
+        this.getNewPiece();
+        }
+
+    getNewPiece() {
+        this.next = new this.piece(this.ctxNext);
+        this.ctxNext.clearReact(
+            0,
+            0,
+            this.ctxNext.canvas.width,
+            this.ctxNext.canvas.height
         );
+        this.next.draw();
     }
-}
 
-valid(p) {
-    return p.shape.every((row, dy) => {
-        return row.every((value, dx) => {
-            let x = p.x + d.x;
-            let y = p.y + d.y;
-            return (
-                this.isEmpty(value) ||
-                (this.insideWalls(x) &&
-                this.aboveFloor(y)
-                );
-            });
-          });
+    draw() {
+        this.piece.draw();
+        this.drawBoard();
+    }
+
+    drop() {
+        let p = moves[KEY.DOWN](this.piece);
+        if (this.valid(p)) {
+            this.piece.move(p);
+        } else {
+            this.freeze();
+            this.clearLines();
+            if (this.piece.y === 0) {
+                // Game over
+                return false;
+            }
+          this.piece = this.next;
+          this.piece.ctx = this.ctx;
+          this.piece.setStartingPosition();
+          this.getNewPiece();
         }
-
-// Transpose matrix, p is the Piece
-for (let y=0; y< p.shape.length; ++y) {
-    for (let x = 0; x < y; ++x) {
-        [p.shape[x][y], p.shape[y][x]] =
-        [p.shape[y][x], p.shape[x][y]]
+        return true;
     }
-}
 
-// Reverse the order of the columns.
-p.shape.forEach(row => row.reverse());
+    clearLines() {
+        let lines = 0;
 
-rotate(p){
-    // Clone with JSON for immutability
-    let clone: IPiece = JSON.parse(JSON.stringify(p));
+        this.grid.forEach((row, y) => {
 
-    // Do algorhythm
-    return clone;
-}
+            // If every value is greater than 0.
+            if (row.every(value => value > 0)) {
+                lines++;
 
-[KEY.UP]: (p) => this.rotate(p)
+                // Remove the row
+                this.grid.splice(y, 1);
 
-freeze() {
-    this.piece.shape.forEach((row, y) => {
-        row.forEach((value, x) => {
-            if (value > 0) {
-                this.grid[y + this.piece.y] [x + this.piece.x] = value;
+                // Add zero filled row at the top.
+                this.grid.unshift(Array(COLS).fill(0));
             }
         });
-    });
-}
 
-drawBoard() {
-    this.grid.forEach((row, y) => {
-        row.forEach((value, x) => {
-            if (value > 0) {
-                this.ctx.fillStyle = COLORS [value];
-                this.ctx.fieelRect(x, y, 1, 1);
+        if (lines > 0) {
+            // Calculate points from cleared lines and level.
+            account.score += this.getLinesClearedPoints(lines);
+            account.lines += lines;
+
+            // If we have reached the lines for next level
+            if (account.lines >= LINES_PER_LEVEL) {
+                // Go to next level
+                account.level++;
+
+            // Remove lines so we start working for the next level
+            account.lines -= LINES_PER_LEVEL;
+
+            // Increase speed of game
+            this.time.level = LEVEL[account.level];
             }
-        });
-    });
-}
-
-this.grid.forEach((row, y) => {
-    // If every value is greater than 0.
-    if (row.every(value => value > 0)) {
-
-        // Remove the row.
-        this.grid.splice(y, 1);
-
-        // Add zero filled row at the top.
-        this.grid.unshift(Array(COLS).fill(0));
+        }
     }
 
-});
-
-getLineClearPoints(lines) {
- return lines === 1 ? Points.SINGLE :
-        lines === 2 ? Points.DOUBLE :
-        lines === 3 ? Points.TRIPLE :
-        lines === 4 ? Points.TETRIS :
-        0;
-};
-
-clearLines() {
-    let lines = 0;
-    this.board.forEach(row, y) => {
-        if (row.every(value => value !== 0)) {
-            lines++; // Increase for cleared line
-            this.board.splice(y, 1);
-            this.board.unshift(Array(COLS).fill(0));
-        }
-    });
-    if (lines > 0) {
-        // Add points if we cleared some lines
-        account.score += this.getLineClearPoints(lines);
+    valid(p) {
+        return p.shape.every((row, dy) => {
+            return row.every((value, dx) => {
+                let x = p.x + dx;
+                let y = p.y + dy;
+                return (
+                    value === 0 ||
+                    (this.insideWalls(x) && this.aboveFloor(y) && this.not) //HERE!!!
+                )
+            })
+        })
     }
 }
