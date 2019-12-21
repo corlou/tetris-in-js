@@ -48,8 +48,6 @@ const POINTS = {
 }
 Object.freeze(POINTS);
 
-const LINES_PER_LEVEL = 10;
-
 const LEVEL = {
     0: 800,
     1: 720,

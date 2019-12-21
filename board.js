@@ -18,20 +18,20 @@ class Board {
         this.ctx.canvas.width = COLS * BLOCK_SIZE;
         this.ctx.canvas.height = ROWS * BLOCK_SIZE;
 
-        // Scale so we don't to give size on every draw.
+        // Scale so we don't need to give size on every draw.
         this.ctx.scale(BLOCK_SIZE, BLOCK_SIZE);
     }
 
     reset() {
         this.grid = this.getEmptyGrid();
-        this.piece = new this.piece(this.ctx);
+        this.piece = new Piece(this.ctx);
         this.piece.setStartingPosition();
         this.getNewPiece();
     }
 
     getNewPiece() {
-        this.next = new this.piece(this.ctxNext);
-        this.ctxNext.clearReact(
+        this.next = new Piece(this.ctxNext);
+        this.ctxNext.clearRect(
             0,
             0,
             this.ctxNext.canvas.width,
@@ -73,7 +73,7 @@ class Board {
             if (row.every(value => value > 0)) {
                 lines++;
 
-                // Remove the row
+                // Remove the row.
                 this.grid.splice(y, 1);
 
                 // Add zero filled row at the top.
@@ -83,19 +83,20 @@ class Board {
 
         if (lines > 0) {
             // Calculate points from cleared lines and level.
+
             account.score += this.getLinesClearedPoints(lines);
             account.lines += lines;
 
             // If we have reached the lines for next level
             if (account.lines >= LINES_PER_LEVEL) {
-                // Go to next level
+                // Goto next level
                 account.level++;
 
                 // Remove lines so we start working for the next level
                 account.lines -= LINES_PER_LEVEL;
 
                 // Increase speed of game
-                this.time.level = LEVEL[account.level];
+                time.level = LEVEL[account.level];
             }
         }
     }
@@ -146,17 +147,17 @@ class Board {
         return y <= ROWS;
     }
 
-    NotOccupied(x, y) {
+    notOccupied(x, y) {
         return this.grid[y] && this.grid[y][x] === 0;
     }
 
     rotate(piece) {
-        /// Clone with JSON for immutability.
+        // Clone with JSON for immutability.
         let p = JSON.parse(JSON.stringify(piece));
 
         // Transpose matrix
-        for (let y = 0; y < p.shape.length; y++) {
-            for (let x = 0; x < y; x++) {
+        for (let y = 0; y < p.shape.length; ++y) {
+            for (let x = 0; x < y; ++x) {
                 [p.shape[x][y], p.shape[y][x]] = [p.shape[y][x], p.shape[x][y]];
             }
         }
@@ -178,6 +179,6 @@ class Board {
                             ? POINTS.TETRIS
                             : 0;
 
-        return (acount.level + 1) * lineClearPoints
+        return (account.level + 1) * lineClearPoints;
     }
 }
